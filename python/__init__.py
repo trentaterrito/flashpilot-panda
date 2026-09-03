@@ -148,6 +148,8 @@ class Panda:
   HEALTH_FLAG_HEARTBEAT_LOST = 1 << 4
   HEALTH_FLAG_SAFETY_RX_CHECKS_INVALID = 1 << 5
   HEALTH_FLAG_SOM_RESET_TRIGGERED = 1 << 6
+  HEALTH_FLAG_CONTROLS_ALLOWED_LATERAL = 1 << 7
+  HEALTH_FLAG_MADS_SAFETY_ENABLED = 1 << 8
 
   H7_DEVICES = [HW_TYPE_RED_PANDA, HW_TYPE_TRES, HW_TYPE_CUATRO, HW_TYPE_BODY]
   SUPPORTED_DEVICES = H7_DEVICES
@@ -537,6 +539,8 @@ class Panda:
       "ignition_line": bool(flags & self.HEALTH_FLAG_IGNITION_LINE),
       "ignition_can": bool(flags & self.HEALTH_FLAG_IGNITION_CAN),
       "controls_allowed": bool(flags & self.HEALTH_FLAG_CONTROLS_ALLOWED),
+      "controls_allowed_lateral": bool(flags & self.HEALTH_FLAG_CONTROLS_ALLOWED_LATERAL),
+      "mads_safety_enabled": bool(flags & self.HEALTH_FLAG_MADS_SAFETY_ENABLED),
       "car_harness_status": a[9],
       "safety_mode": a[10],
       "safety_param": a[11],

@@ -21,6 +21,18 @@ static int get_health_pkt(void *dat) {
   health->flags_pkt |= safety_rx_checks_invalid ? HEALTH_FLAG_SAFETY_RX_CHECKS_INVALID : 0U;
   health->flags_pkt |= bootkick_reset_triggered ? HEALTH_FLAG_SOM_RESET_TRIGGERED : 0U;
 
+  // Same separate lateral-permission concept as sunnypilot, carried in spare
+  // flags rather than importing its unrelated packet-layout changes.
+  ENTER_CRITICAL();
+  ford_sp_check();
+  if (ford_sp_gate.enabled && controls_allowed_lateral) {
+    health->flags_pkt |= HEALTH_FLAG_CONTROLS_ALLOWED_LATERAL;
+  }
+  if (ford_sp_gate.enabled) {
+    health->flags_pkt |= HEALTH_FLAG_MADS_SAFETY_ENABLED;
+  }
+  EXIT_CRITICAL();
+
   health->safety_tx_blocked_pkt = safety_tx_blocked;
   health->safety_rx_invalid_pkt = safety_rx_invalid;
   health->tx_buffer_overflow_pkt = tx_buffer_overflow;
@@ -111,6 +123,9 @@ int comms_control_handler(ControlPacket_t *req, uint8_t *resp) {
     #endif
     // **** 0xc0: reset communications state
     case 0xc0:
+      ENTER_CRITICAL();
+      safety_lateral_revoke(LATERAL_REVOKE_RESET);
+      EXIT_CRITICAL();
       comms_can_reset();
       break;
     // **** 0xc1: get hardware type
@@ -298,10 +313,15 @@ int comms_control_handler(ControlPacket_t *req, uint8_t *resp) {
     // **** 0xf3: Heartbeat. Resets heartbeat counter.
     case 0xf3:
       {
+        ENTER_CRITICAL();
         heartbeat_counter = 0U;
         heartbeat_lost = false;
         heartbeat_disabled = false;
         heartbeat_engaged = (req->param1 == 1U);
+        // Port the separate sunnypilot heartbeat channel as a VETO only.
+        // No grace/mismatch counter and no positive permission grant here.
+        ford_sp_host_heartbeat(req->param1, req->param2, req->length);
+        EXIT_CRITICAL();
         break;
       }
     // **** 0xf6: set siren enabled

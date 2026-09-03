@@ -19,6 +19,7 @@
 #include "board/drivers/fdcan.h"
 
 #include "board/sys/power_saving.h"
+#include "board/flashpilot_mads_platform.h"
 
 #include "board/obj/gitversion.h"
 
@@ -303,6 +304,7 @@ int main(void) {
   enable_fpu();
 
   microsecond_timer_init();
+  ford_sp_set_board_check(flashpilot_mads_platform_ready);
 
   current_board->set_siren(false);
   if (current_board->has_fan) {
