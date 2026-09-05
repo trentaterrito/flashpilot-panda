@@ -557,6 +557,8 @@ class Panda:
       "som_reset_triggered": bool(flags & self.HEALTH_FLAG_SOM_RESET_TRIGGERED),
       "sound_output_level": a[19],
       "temperature": a[20] - 40.0,
+      "lateral_revocation_reason": a[21],
+      "lateral_authorization_gates": a[22],
     }
 
   @ensure_health_packet_version

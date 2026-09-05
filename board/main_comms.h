@@ -30,6 +30,11 @@ static int get_health_pkt(void *dat) {
   }
   if (ford_sp_gate.enabled) {
     health->flags_pkt |= HEALTH_FLAG_MADS_SAFETY_ENABLED;
+    health->lateral_revocation_reason_pkt = (uint8_t)ford_sp_gate.reason;
+    health->lateral_authorization_gates_pkt = ford_sp_diagnostic_gate_bits();
+  } else {
+    health->lateral_revocation_reason_pkt = 0U;
+    health->lateral_authorization_gates_pkt = 0U;
   }
   EXIT_CRITICAL();
 

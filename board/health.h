@@ -32,6 +32,8 @@ struct __attribute__((packed)) health_t {
   uint16_t sbu2_voltage_mV;
   uint16_t sound_output_level_pkt;
   uint8_t temperature_pkt;
+  uint8_t lateral_revocation_reason_pkt;
+  uint16_t lateral_authorization_gates_pkt;
 };
 
 typedef struct __attribute__((packed)) {
